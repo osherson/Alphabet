@@ -17,10 +17,10 @@ mass=[1000,1200,1600,2000,3000]
 VAR = "dijetmass"
 bins = [20,1000,3000]
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>1000&(jet2pmass<135&jet2pmass>105)&(jet1pmass<135&jet1pmass>105)&jet1tau21<0.75&jet2tau21<0.75&(jet1bbtag>-0.3&jet2bbtag>-0.3))"
-lumi =2100.
+sigregcut = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>-0.2&jet2bbtag>-0.2))"
+lumi =2190.
 generatedEvents =50000.
-background = TFile("hh_13_TeV.root")
+background = TFile("Hbb_output.root")
 UD = ['Up','Down']
 
 for m in mass:
