@@ -25,7 +25,7 @@ from Alphabet import *
 
 # FORMAT IS:
 # dist = ("name", "location of file", "name of tree", "weight (can be more complicated than just a number, see MC example below)")
-QCD = DIST("Data", "/eos/uscms/store/user/cvernier/JetHT_selected.root", "myTree", "(1.)")
+QCD = DIST("Data", "../qcd_all.root", "myTree", "(1.)")
 
 # Now we arrange them correctly:
 
@@ -34,7 +34,7 @@ DistsWeWantToEstiamte = [QCD]
 HbbTest = Alphabetizer("QCDalphaTest", DistsWeWantToEstiamte, [])
 
 # apply a preselection to the trees:
-presel = "(dijetmass>1000&(jet1pmass<130&jet1pmass>90)&jet2tau21<0.6&jet1tau21<0.6&&jet1bbtag<-0.2)"
+presel = "(dijetmass>1000&(jet1pmass<130&jet1pmass>90)&jet2tau21<0.6&jet1tau21<0.6&&jet1bbtag>0.2)"
 
 
 #presel = "(dijetmass>1000&(jet2pmass<135&jet2pmass>105)&jet2tau21<0.5&jet1tau21<0.5&jet2bbtag>-0.84)"
@@ -47,7 +47,7 @@ HbbTest.TwoDPlot.Draw() # Show that plot:
 
 # NOW DO THE ACTUAL ALPHABETIZATION: (Creating the regions)
 # The command is: .GetRates(cut, bins, truthbins, center, fit)
-cut = [-0.2, ">"]
+cut = [0.2, ">"]
 # so we need to give it bins:
 bins = [[50,70],[70,90],[130,150],[150,200]]
 # truth bins (we don't want any because we are looking at real data::)
@@ -84,13 +84,13 @@ leg.AddEntry(HbbTest.G, "events used in fit", "PL")
 leg.AddEntry(HbbTest.Fit.fit, "linear fit", "L")
 leg.AddEntry(HbbTest.Fit.ErrUp, "fit errors", "L")
 leg.Draw()
-C2.Print("fit_data_bbtag%s.pdf"%cut[0])
+C2.Print("fi_bbtag%s.pdf"%cut[0])
 # Now we actually run the estiamte!
 
 # cuts:
 
-tag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag<-0.2&jet2bbtag>-0.2))"
-antitag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<-0.2&jet2bbtag<-0.2))"
+tag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.2&jet2bbtag>0.2))"
+antitag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag>0.2&jet2bbtag<0.2))"
 
 
 # var we want to look at:
@@ -105,7 +105,7 @@ HbbTest.MakeEst(var_array2, antitag, tag)
 # now we can plot (maybe I should add some auto-plotting functions?)
 hbins = [20,1000,3000]
 # the real value is the sum of the histograms in self.hists_MSR
-V = TH1F("V", "", hbins[0],hbins[1], hbins[2])
+V = TH1F("data_obs", "", hbins[0],hbins[1], hbins[2])
 for i in HbbTest.hists_MSR:
 	V.Add(i,1.)
 # the estimate is the sum of the histograms in self.hists_EST and self.hist_MSR_SUB
@@ -144,8 +144,8 @@ leg2 = TLegend(0.6,0.6,0.89,0.89)
 #leg2.SetHeader("cut @ #tau_{2}/#tau_{1} < 0.5")
 leg2.SetLineColor(0)
 leg2.SetFillColor(0)
-leg2.AddEntry(V, "Data in 1 bb-tag fail CR", "PL")
-leg2.AddEntry(N, "Data prediction", "F")
+leg2.AddEntry(V, "QCD in SR", "PL")
+leg2.AddEntry(N, "QCD prediction", "F")
 leg2.AddEntry(NU, "uncertainty", "F")
 
 
@@ -159,7 +159,7 @@ ND.Draw("same")
 leg2.Draw()
 FILE.Write()
 FILE.Save()
-C3.Print("bkg_data_bbtag%s.pdf"%cut[0])
+C3.Print("bkg_bbtag%s.pdf"%cut[0])
 
 
 
