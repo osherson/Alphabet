@@ -7,7 +7,7 @@ import ROOT
 from ROOT import *
 import scipy
 
-# Our functions:
+# Our HbbTest.Fit.fittions:
 import Alphabet_Header
 from Alphabet_Header import *
 import Plotting_Header
@@ -34,7 +34,7 @@ DistsWeWantToEstiamte = [QCD]
 HbbTest = Alphabetizer("QCDalphaTest", DistsWeWantToEstiamte, [])
 
 # apply a preselection to the trees:
-presel = "(dijetmass>1000&(jet1pmass<130&jet1pmass>90)&jet2tau21<0.6&jet1tau21<0.6&&jet1bbtag<-0.2)"
+presel = "(dijetmass>500&(jet1pmass<130&jet1pmass>90)&jet2tau21<0.75&jet1tau21<0.6&&jet1bbtag<-0.6)"
 
 
 #presel = "(dijetmass>1000&(jet2pmass<135&jet2pmass>105)&jet2tau21<0.5&jet1tau21<0.5&jet2bbtag>-0.84)"
@@ -56,8 +56,8 @@ truthbins = []
 center = 125.
 # and finally, a fit, taken from the file "Converters.py". We are using the linear fit, so:
 
-#F = QuadraticFit([0.1,0.1,0.1], -75, 75, "quadfit", "EMRFNEX0")
-F = LinearFit([0.2,-0.2], -75, 75, "linFit1", "EMRNS")
+F = QuadraticFit([0.1,0.1,0.1], -75, 75, "quadfit", "EMRFNEX0")
+#F = LinearFit([0.2,-0.2], -75, 75, "linFit1", "EMRNS")
 
 # All the error stuff is handled by the LinearFit class. We shouldn't have to do anything else!
 
@@ -81,7 +81,7 @@ leg.SetLineColor(0)
 leg.SetFillColor(0)
 #leg.SetHeader("cut @ #tau_{2}/#tau_{1} < 0.5")
 leg.AddEntry(HbbTest.G, "events used in fit", "PL")
-leg.AddEntry(HbbTest.Fit.fit, "linear fit", "L")
+leg.AddEntry(HbbTest.Fit.fit, "fit", "L")
 leg.AddEntry(HbbTest.Fit.ErrUp, "fit errors", "L")
 leg.Draw()
 C2.Print("fit_data_bbtag%s.pdf"%cut[0])
@@ -89,12 +89,12 @@ C2.Print("fit_data_bbtag%s.pdf"%cut[0])
 
 # cuts:
 
-tag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag<-0.2&jet2bbtag>-0.2))"
-antitag = "(dijetmass>1000&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<-0.2&jet2bbtag<-0.2))"
+tag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag<-0.2&jet2bbtag>-0.2))"
+antitag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<-0.2&jet2bbtag<-0.2))"
 
 
 # var we want to look at:
-var_array2 = ["dijetmass", 20,1000,3000]
+var_array2 = ["dijetmass", 24,800,3000]
 
 FILE = TFile("Hbb_output.root", "RECREATE")
 FILE.cd()
@@ -102,8 +102,8 @@ FILE.cd()
 HbbTest.MakeEst(var_array2, antitag, tag)
 
 
-# now we can plot (maybe I should add some auto-plotting functions?)
-hbins = [20,1000,3000]
+# now we can plot (maybe I should add some auto-plotting HbbTest.Fit.fittions?)
+hbins = [24,800,3000]
 # the real value is the sum of the histograms in self.hists_MSR
 V = TH1F("V", "", hbins[0],hbins[1], hbins[2])
 for i in HbbTest.hists_MSR:
@@ -163,6 +163,15 @@ C3.Print("bkg_data_bbtag%s.pdf"%cut[0])
 
 
 
+f = open("transfer_fn.txt",'a')
+f.write("{\n")
+f.write("\n\tfirst = "+str(HbbTest.Fit.fit.GetParameter(0))+";")
+f.write("\n\tfirstErr = "+str(HbbTest.Fit.fit.GetParErrors()[0])+";")
+f.write("\n\tsecond = "+str(HbbTest.Fit.fit.GetParameter(1))+";")
+f.write("\n\tsecondErr = "+str(HbbTest.Fit.fit.GetParErrors()[1])+";")
+f.write("\n\tthird = "+str(HbbTest.Fit.fit.GetParameter(2))+";")
+f.write("\n\tthirdErr = "+str(HbbTest.Fit.fit.GetParErrors()[2])+";")
+f.write("\n}\n")
 
 
 

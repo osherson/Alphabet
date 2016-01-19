@@ -55,19 +55,23 @@ class Alphabetizer:
 	self.hists_EST_SUB_DN = []
 	self.hists_MSR = []
 	self.hists_MSR_SUB = []
+	self.hists_ATAG = []
 	for i in self.DP:
 		temphist = TH1F("Hist_VAL"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistN = TH1F("Hist_NOMINAL"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistU = TH1F("Hist_UP"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistD = TH1F("Hist_DOWN"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
+                temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		quickplot(i.File, i.Tree, temphist, var_array[0], tag, i.weight)
 		quickplot(i.File, i.Tree, temphistN, var_array[0], antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
 		quickplot(i.File, i.Tree, temphistU, var_array[0], antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
 		quickplot(i.File, i.Tree, temphistD, var_array[0], antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")")
+		quickplot(i.File, i.Tree, temphistA, var_array[0], antitag, i.weight)
 		self.hists_MSR.append(temphist)
 		self.hists_EST.append(temphistN)
 		self.hists_EST_UP.append(temphistU)
 		self.hists_EST_DN.append(temphistD)
+		self.hists_ATAG.append(temphistA) 
 	for i in self.DM:
 		temphist = TH1F("Hist_SUB_VAL"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistN = TH1F("Hist_SUB_NOMINAL"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
