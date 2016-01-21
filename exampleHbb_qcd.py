@@ -166,8 +166,51 @@ FILE.Write()
 FILE.Save()
 C3.Print("bkg_bbtag%s.pdf"%cut[0])
 
+Pull = V.Clone("Pull")
+Pull.Add(N, -1.)
 
+for i in range(Pull.GetNbinsX()+1):
+	a = Pull.GetBinContent(i)
+	ae = V.GetBinError(i)
+	u = NU.GetBinContent(i) - N.GetBinContent(i)
+	d = ND.GetBinContent(i) - N.GetBinContent(i)
+	ue = math.sqrt(ae**2 + u**2)
+	de = math.sqrt(ae**2 + d**2)
+	if a > 0.:
+		e = ue
+	else:
+		e = de
+	if e > 1:
+		f = a/e
+	else:
+		f = a
+	Pull.SetBinContent(i, f)
 
+Pull.GetXaxis().SetTitle("")
+Pull.SetStats(0)
+Pull.SetFillStyle(1001)
+Pull.SetLineColor(kRed)
+Pull.SetFillColor(kRed)
+Pull.GetXaxis().SetNdivisions(0)
+Pull.GetYaxis().SetNdivisions(4)
+Pull.GetYaxis().SetTitle("(Data - Bkg)/#sigma")
+Pull.GetYaxis().SetLabelSize(85/15*Pull.GetYaxis().GetLabelSize())
+Pull.GetYaxis().SetTitleSize(4.2*Pull.GetYaxis().GetTitleSize())
+Pull.GetYaxis().SetTitleOffset(0.175)
+Pull.GetYaxis().SetRangeUser(-3.,3.)
+
+C4 = TCanvas("C4", "", 2*800, 2*600)
+plot = TPad("pad1", "The pad 80% of the height",0,0.15,1,1)
+pull = TPad("pad2", "The pad 20% of the height",0,0,1.0,0.15)
+plot.Draw()
+pull.Draw()
+plot.cd()
+N.Draw("Hist")
+V.Draw("same E0")
+NU.Draw("same")
+ND.Draw("same")
+pull.cd()
+Pull.Draw("hist")
 
 
 
