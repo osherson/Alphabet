@@ -46,12 +46,12 @@ HbbTest.TwoDPlot.Draw() # Show that plot:
 
 # NOW DO THE ACTUAL ALPHABETIZATION: (Creating the regions)
 # The command is: .GetRates(cut, bins, truthbins, center, fit)
-cut = [-0.2, ">"]
+cut = [0.4, ">"]
 # so we need to give it bins:
 bins = [[50,75],[75,100],[130,150],[150,200]]
 #bins = [[50,70],[70,90],[130,150],[150,200]]
 # truth bins (we don't want any because we are looking at real data::)
-truthbins = []
+truthbins = [[100,130]]
 # a central value for the fit (could be 0 if you wanted to stay in the mass variable, we are looking at tops, so we'll give it 170 GeV)
 center = 115.
 # and finally, a fit, taken from the file "Converters.py". We are using the linear fit, so:
@@ -75,7 +75,7 @@ HbbTest.Fit.ErrUp.SetLineStyle(2)
 HbbTest.Fit.ErrUp.Draw("same")
 HbbTest.Fit.ErrDn.SetLineStyle(2)
 HbbTest.Fit.ErrDn.Draw("same")
-
+HbbTest.truthG.Draw("opt")
 leg = TLegend(0.6,0.6,0.89,0.89)
 leg.SetLineColor(0)
 leg.SetFillColor(0)
@@ -89,8 +89,8 @@ C2.Print("fi_bbtag%s.pdf"%cut[0])
 
 # cuts:
 
-tag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>-0.2&jet2bbtag>-0.2))"
-antitag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<-0.2&jet2bbtag>-0.2))"
+tag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
+antitag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<0.4&jet2bbtag>0.4))"
 
 
 # var we want to look at:
@@ -211,6 +211,6 @@ NU.Draw("same")
 ND.Draw("same")
 pull.cd()
 Pull.Draw("hist")
-
+C4.Print("pull.pdf")
 
 
