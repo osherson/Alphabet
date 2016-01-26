@@ -85,3 +85,45 @@ class Alphabetizer:
 		self.hists_EST_SUB.append(temphistN)
 		self.hists_EST_SUB_UP.append(temphistU)
 		self.hists_EST_SUB_DN.append(temphistD)
+    def MakeEstVariable(self, variable, binBoundaries, antitag, tag):
+        # makes an estimate in a region, based on an anti-tag region, of that variable in all dists
+        self.Fit.MakeConvFactor(self.X, self.center)
+        self.hists_EST = []
+        self.hists_EST_SUB = []
+        self.hists_EST_UP = []
+        self.hists_EST_SUB_UP = []
+        self.hists_EST_DN = []
+        self.hists_EST_SUB_DN = []
+        self.hists_MSR = []
+        self.hists_MSR_SUB = []
+        self.hists_ATAG = []
+        for i in self.DP:
+                temphist = TH1F("Hist_VAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistN = TH1F("Hist_NOMINAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistU = TH1F("Hist_UP"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistD = TH1F("Hist_DOWN"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                quickplot(i.File, i.Tree, temphist, variable, tag, i.weight)
+                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
+                quickplot(i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
+                quickplot(i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")")
+                quickplot(i.File, i.Tree, temphistA, variable, antitag, i.weight)
+                self.hists_MSR.append(temphist)
+                self.hists_EST.append(temphistN)
+                self.hists_EST_UP.append(temphistU)
+                self.hists_EST_DN.append(temphistD)
+                self.hists_ATAG.append(temphistA)
+        for i in self.DM:
+                temphist = TH1F("Hist_SUB_VAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistN = TH1F("Hist_SUB_NOMINAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                temphistU = TH1F("Hist_SUB_UP"+self.name+"_"+i.name, "",len(binBoundaries)-1, array('d',binBoundaries))
+                temphistD = TH1F("Hist_SUB_DOWN"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
+                quickplot(i.File, i.Tree, temphist, variable, tag, i.weight)
+                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
+                quickplot(i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
+                quickplot(i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")")
+                self.hists_MSR_SUB.append(temphist)
+                self.hists_EST_SUB.append(temphistN)
+                self.hists_EST_SUB_UP.append(temphistU)
+                self.hists_EST_SUB_DN.append(temphistD)
+    
