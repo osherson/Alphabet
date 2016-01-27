@@ -1,9 +1,9 @@
 import ROOT as rt
 from ROOT import *
-
+import copy
 withAcceptance=False
 unblind=False
-
+rt.gROOT.ProcessLine("struct limit_t {Double_t limit;};")
 gROOT.Reset()
 gROOT.SetStyle("Plain")
 gStyle.SetOptStat(0)
@@ -37,9 +37,12 @@ def Plot(files, label, obs):
     for onefile in files:
         print onefile
         fileIN = rt.TFile.Open(onefile)
-        fChain.append(fileIN.Get("limit;1"))  
+        
+	print fileIN
+        fChain.append(copy.copy(fileIN.Get("limit;1")))  
+        print fChain
 
-        rt.gROOT.ProcessLine("struct limit_t {Double_t limit;};")
+        
         from ROOT import limit_t
         limit_branch = limit_t()
 
@@ -236,11 +239,11 @@ def Plot(files, label, obs):
     banner.Draw();  
 
     if withAcceptance:
-        c1.SaveAs("brazilianFlag_acc_%s_13TeV.root" %label)
-        c1.SaveAs("brazilianFlag_acc_%s_13TeV.pdf" %label)
+        c1.SaveAs("brazilianFlag_acc_%s_13TeV1.root" %label)
+        c1.SaveAs("brazilianFlag_acc_%s_13TeV1.pdf" %label)
     else:
-        c1.SaveAs("brazilianFlag_%s_13TeV.root" %label)
-        c1.SaveAs("brazilianFlag_%s_13TeV.pdf" %label)
+        c1.SaveAs("brazilianFlag_%s_13TeV1.root" %label)
+        c1.SaveAs("brazilianFlag_%s_13TeV1.pdf" %label)
 
 
 if __name__ == '__main__':
