@@ -27,11 +27,15 @@ class Alphabetizer:
     def SetRegions(self, var_array, presel):
 	# var_array = [x var, y var, x n bins, x min, x max, y n bins, y min, y max]
 	self.X = var_array[0]
+	print var_array[0]
 	self.Pplots = TH2F("added"+self.name, "", var_array[2],var_array[3],var_array[4],var_array[5],var_array[6],var_array[7])
 	self.Mplots = TH2F("subbed"+self.name, "", var_array[2],var_array[3],var_array[4],var_array[5],var_array[6],var_array[7])
 	for i in self.DP:
+#		 slow2dplot(i.File, i.Tree, self.Pplots, var_array[0], var_array[1], presel, i.weight)		
 		 quick2dplot(i.File, i.Tree, self.Pplots, var_array[0], var_array[1], presel, i.weight)
+		 print (i.Tree)
 	for j in self.DM:
+#		 slow2dplot(i.File, i.Tree, self.Pplots, var_array[0], var_array[1], presel, i.weight)
 		 quick2dplot(j.File, j.Tree, self.Mplots, var_array[0], var_array[1], presel, j.weight)
 	self.TwoDPlot = self.Pplots.Clone("TwoDPlot_"+self.name)
 	self.TwoDPlot.Add(self.Mplots, -1.)
@@ -61,7 +65,7 @@ class Alphabetizer:
 		temphistN = TH1F("Hist_NOMINAL"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistU = TH1F("Hist_UP"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		temphistD = TH1F("Hist_DOWN"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
-                temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
+		temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", var_array[1], var_array[2], var_array[3])
 		quickplot(i.File, i.Tree, temphist, var_array[0], tag, i.weight)
 		quickplot(i.File, i.Tree, temphistN, var_array[0], antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
 		quickplot(i.File, i.Tree, temphistU, var_array[0], antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
@@ -98,16 +102,43 @@ class Alphabetizer:
         self.hists_MSR_SUB = []
         self.hists_ATAG = []
         for i in self.DP:
+                print self.DP
+                print self.name
                 temphist = TH1F("Hist_VAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 temphistN = TH1F("Hist_NOMINAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 temphistU = TH1F("Hist_UP"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 temphistD = TH1F("Hist_DOWN"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 quickplot(i.File, i.Tree, temphist, variable, tag, i.weight)
-                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
-                quickplot(i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
-                quickplot(i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")")
+
+##################################################################################################################ù
+######################## warning! template error handling temporarily hard-coded ###############################
+#################################################################################################################
+                quickplot(i.File, i.Tree, temphistN, variable, antitag, i.weight)
+                quickplot(i.File, i.Tree, temphistU, variable, antitag, i.weight)
+                quickplot(i.File, i.Tree, temphistD, variable, antitag, i.weight)
                 quickplot(i.File, i.Tree, temphistA, variable, antitag, i.weight)
+                factor=(self.Fit.ConvFact).split("+")[0].split("(")[-1]
+                print float(factor)   
+                temphistN.Scale(float(factor)) 
+                temphistU.Scale(float(factor))
+                temphistD.Scale(float(factor)) 
+                print self.Fit.ConvFactUp		       
+                error=((self.Fit.ConvFactUp).split("*")[-1]).split("^")[0].split(")")[0]
+                error2=float(error)
+                print error2
+                for nbin in range(len(binBoundaries)):
+                      if (temphistU.GetBinContent(nbin)!=0):
+                         print "error", temphistU.GetBinContent(nbin), temphistU.GetBinError(nbin)
+                         error3=((error2*temphistU.GetBinContent(nbin))**2+(float(factor)*temphistU.GetBinError(nbin))**2)**0.5
+                         temphistU.SetBinContent(nbin, temphistU.GetBinContent(nbin)+error3)
+                         temphistD.SetBinContent(nbin, temphistD.GetBinContent(nbin)-error3)
+                         print  temphistU.GetBinContent(nbin)		
+#              	print "("+i.weight+"*"+factor+"+"+str(error)+")"
+#                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
+#                quickplot(i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")")
+#                quickplot(i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")")
+#                quickplot(i.File, i.Tree, temphistA, variable, antitag, i.weight)
                 self.hists_MSR.append(temphist)
                 self.hists_EST.append(temphistN)
                 self.hists_EST_UP.append(temphistU)
