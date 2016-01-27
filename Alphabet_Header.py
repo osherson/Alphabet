@@ -50,12 +50,15 @@ def AlphabetSlicer(plot, bins, cut, which, center): # Takes a 2D plot and measur
                 if passed == 0 or failed == 0:
                         continue
                 x.append((float((b[0]+b[1])/2.)-center))  # do the math in these steps (calculate error)
-                exl.append(float((b[1]-b[0])/2.))
-                exh.append(float((b[1]-b[0])/2.))
+#                exl.append(float((b[1]-b[0])/2.))
+#                exh.append(float((b[1]-b[0])/2.))
+                exl.append(float(0.))
+                exh.append(float(0.))
                 y.append(passed/(failed))      # NOTE: negative bins are not corrected, if you're getting negative values your bins are too fine.
                 ep = math.sqrt(passed)
                 ef = math.sqrt(failed)
-                err = (passed/(failed))*math.sqrt((ep/passed)+(ef/(passed))**2)
+#                err = (passed/(failed))*math.sqrt((ep/passed)+(ef/(passed))**2)
+                err = ((passed/failed)*(1-(passed/failed))/failed)**0.5
                 eyh.append(err)
                 if (passed/failed) - err > 0.:
                         eyl.append(err)
