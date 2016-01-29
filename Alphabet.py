@@ -138,6 +138,8 @@ class Alphabetizer:
                          error3=((error2*temphistU.GetBinContent(nbin))**2+(float(factor)*temphistU.GetBinError(nbin))**2)**0.5
                          temphistU.SetBinContent(nbin, temphistU.GetBinContent(nbin)*float(factor)+error3)
                          temphistD.SetBinContent(nbin, temphistD.GetBinContent(nbin)*float(factor)-error3)
+                         temphistU.SetBinError(nbin, 0)
+                         temphistD.SetBinError(nbin, 0)
                          print  temphistU.GetBinContent(nbin)		
 #              	print "("+i.weight+"*"+factor+"+"+str(error)+")"
 #                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
