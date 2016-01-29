@@ -111,28 +111,33 @@ class Alphabetizer:
                 temphistA = TH1F("Hist_ATAG"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
                 quickplot(i.File, i.Tree, temphist, variable, tag, i.weight)
 
-##################################################################################################################ù
+##################################################################################################################
 ######################## warning! template error handling temporarily hard-coded ###############################
 #################################################################################################################
                 quickplot(i.File, i.Tree, temphistN, variable, antitag, i.weight)
                 quickplot(i.File, i.Tree, temphistU, variable, antitag, i.weight)
                 quickplot(i.File, i.Tree, temphistD, variable, antitag, i.weight)
                 quickplot(i.File, i.Tree, temphistA, variable, antitag, i.weight)
+                print self.Fit.ConvFact
                 factor=(self.Fit.ConvFact).split("+")[0].split("(")[-1]
                 print float(factor)   
-                temphistN.Scale(float(factor)) 
-                temphistU.Scale(float(factor))
-                temphistD.Scale(float(factor)) 
+                 
                 print self.Fit.ConvFactUp		       
                 error=((self.Fit.ConvFactUp).split("*")[-1]).split("^")[0].split(")")[0]
                 error2=float(error)
+		temphistN.Scale(float(factor)) 
+                #temphistU.Scale(float(factor))
+                #temphistD.Scale(float(factor))
                 print error2
                 for nbin in range(len(binBoundaries)):
+                      print temphistU.GetBinContent(nbin) 
                       if (temphistU.GetBinContent(nbin)!=0):
-                         print "error", temphistU.GetBinContent(nbin), temphistU.GetBinError(nbin)
+                         
+                         print error2*temphistU.GetBinContent(nbin), error2, temphistU.GetBinContent(nbin) 
+                         print float(factor)*temphistU.GetBinError(nbin), float(factor), temphistU.GetBinError(nbin)
                          error3=((error2*temphistU.GetBinContent(nbin))**2+(float(factor)*temphistU.GetBinError(nbin))**2)**0.5
-                         temphistU.SetBinContent(nbin, temphistU.GetBinContent(nbin)+error3)
-                         temphistD.SetBinContent(nbin, temphistD.GetBinContent(nbin)-error3)
+                         temphistU.SetBinContent(nbin, temphistU.GetBinContent(nbin)*float(factor)+error3)
+                         temphistD.SetBinContent(nbin, temphistD.GetBinContent(nbin)*float(factor)-error3)
                          print  temphistU.GetBinContent(nbin)		
 #              	print "("+i.weight+"*"+factor+"+"+str(error)+")"
 #                quickplot(i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")")
