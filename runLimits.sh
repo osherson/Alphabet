@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in 1000 1200 1600 2000 3000
+for i in 1000 1200 1600 1800 2000 2500 3000 3500 4000
 do
 	echo "mass point $i"
 	mkdir Limits/sig$i

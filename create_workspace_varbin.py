@@ -15,7 +15,7 @@ from Plotting_Header import *
 
 
 
-mass=[1000,1200,1600,2000,3000]
+mass=[1000,1200,1600,1800, 2000,2500, 3000, 3500, 4000]
 VAR = "dijetmass"
 
 #variable bin from dijet analysis 788 838 
@@ -24,7 +24,7 @@ binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1
 
 
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.8&jet2bbtag>0.8))"
+sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
 lumi =2190.
 background = TFile("Hbb_output.root")
 UD = ['Up','Down']
@@ -48,7 +48,7 @@ for m in mass:
 	Signal_mX = TH1F("Signal_mX_%s"%(m), "", len(binBoundaries)-1, array('d',binBoundaries))
 
 
-	signal_file= TFile("../BG_%s_v6p2_0.root"%(m))
+	signal_file= TFile("Grav_%s_0.root"%(m))
 	htrig = signal_file.Get("ct")
 	generatedEvents =htrig.GetEntries()
 	print(generatedEvents)
@@ -64,13 +64,14 @@ for m in mass:
 	qcd =QCD
 	qcd_antitag = QCD_Antitag
 	qcd_up = QCD_CMS_scale_13TeVUp
+	
 	qcd_down = QCD_CMS_scale_13TeVDown
 	data = data_obs
 	output_file.cd()
         hh.cd()
 	qcd_stat_up =TH1F("qcd_stat_up","",len(binBoundaries)-1, array('d',binBoundaries))
         qcd_stat_down =TH1F("qcd_stat_down","",len(binBoundaries)-1, array('d',binBoundaries))
-	
+	print qcd_stat_up
 	for bin in range(0,len(binBoundaries)-1):
             for Q in UD:
                 qcd_syst =TH1F("%s_bin%s%s"%("QCD_CMS_stat_13TeV",bin,Q),"",len(binBoundaries)-1, array('d',binBoundaries))
@@ -105,13 +106,13 @@ for m in mass:
         qcd.Write()
 	qcd_up.Write()
 	qcd_down.Write()
-	qcd_stat_up.Write()
-	qcd_stat_down.Write()
+#	qcd_stat_up.Write()
+#	qcd_stat_down.Write()
 	Signal_mX.Write()
 	data.Write()
 	hh.Write()
 	output_file.Write()
-	#output_file.Close()
+#	output_file.Close()
 
 	
 
@@ -132,15 +133,17 @@ for m in mass:
         text_file.write("process                                         Signal_mX_%s  QCD\n"%(m))
         text_file.write("rate                                            %f  %f\n"%(signal_integral,qcd_integral))
         text_file.write("-------------------------------------------------------------------------------\n")
-	text_file.write("lumi_13TeV lnN                          1.046       1.046\n")	
+        text_file.write("lumi_13TeV lnN                          1.046       1.046\n")	
+        text_file.write("CMS_eff_tau21_sf lnN                    1.177       -\n") #(0.129/1.031)*sqrt(2) 
         text_file.write("CMS_scale_13TeV shapeN2                           -       1.000\n")
+     
 	for bin in range(0,len(binBoundaries)-1):
 		text_file.write("CMS_stat_13TeV_bin%s shapeN2                           -       1.000\n"%(bin))
 
 
 	text_file.close()
 
-
+	print qcd_stat_up
 	qcd_up.SetLineColor(kBlack)
         qcd_down.SetLineColor(kBlack)
 	qcd_up.SetLineStyle(2)
@@ -177,10 +180,10 @@ for m in mass:
 	C3.cd()
 	qcd.Draw("Hist")
 	data.Draw("same E0")
-	qcd_up.Draw("same")
-	qcd_down.Draw("same")
-	qcd_stat_up.Draw("same")
-        qcd_stat_down.Draw("same")
+	qcd_up.Draw("hist same")
+	qcd_down.Draw("hist same")
+	qcd_stat_up.Draw("hist same")
+        qcd_stat_down.Draw("hist same")
 	leg2.Draw()
 	if m< 1200 :
 		C3.Print("split_unc.pdf")

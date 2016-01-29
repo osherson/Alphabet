@@ -45,8 +45,12 @@ DistsWeWantToEstiamte = [QCD]
 # apply a preselection to the trees:
 presel = "(dijetmass>500&(jet1pmass<130&jet1pmass>100)&jet2tau21<0.75&jet1tau21<0.6)"#&&jet1bbtag<-0.6)"
 binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
-       1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019
- ]#, 3147, 3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509,
+       1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147, #3279,
+3416]#, 3558, 3704, 3854, 4010]
+#, 4171, 4337, 4509,
+
+binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
+       1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3279, 3558]
 
 listofhbbtests=[]
 for b in range(len(binBoundaries)-1):
@@ -58,11 +62,7 @@ for b in range(len(binBoundaries)-1):
 
 #presel = "(dijetmass>1000&(jet2pmass<135&jet2pmass>105)&jet2tau21<0.4&jet1tau21<0.4&jet2bbtag>-0.84)"
 # pick the two variables to do the estiamte it (in this case, Soft Drop Mass (from 70 to 350 in 48 bins) and tau32 (from 0 to 1))
-#
-#############################################################################################
-############### I'm using slowplot to pick the min-bbtagger! ################################
-############### var_array[0] and var_array[1] are not used! #################################
-#############################################################################################
+
 
 
 	var_array = ["jet2pmass", "jet2bbtag", 30,50,200, 200, -1.1, 1.1]
@@ -83,8 +83,8 @@ for b in range(len(binBoundaries)-1):
 	center = 115.
 	# and finally, a fit, taken from the file "Converters.py". We are using the linear fit, so:
 
-#	F = QuadraticFit([0.1,0.1,0.1], -75, 75, "quadfit", "EMRFNEX0")
-	F = LinearFit([0.2,-0.2], -75, 75, "linFit1", "EMRNS")
+	F = QuadraticFit([0.1,0.1,0.1], -75, 75, "quadfit", "EMRFNEX0")
+#	F = LinearFit([0.2,-0.2], -75, 75, "linFit1", "EMRNS")
 
 	# All the error stuff is handled by the LinearFit class. We shouldn't have to do anything else!
 
@@ -95,6 +95,7 @@ for b in range(len(binBoundaries)-1):
 	C2 = TCanvas("C2", "", 800, 800)
 	C2.cd()
 	HbbTest.G.SetTitle("")
+	HbbTest.G.SetMarkerStyle(7)
 	HbbTest.G.Draw("AP")
 	HbbTest.G.GetXaxis().SetTitle("#Delta(jet - Higgs)_{mass} (GeV)")
 	HbbTest.G.GetYaxis().SetTitle("N_{passed}/N_{failed}")
@@ -126,9 +127,7 @@ variable = "dijetmass"
 
 #variable bin from dijet analysis 788 838 
 binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
-      1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019
- ]#, 3147, 3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509,
-
+       1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3279, 3558]
 FILE = TFile("Hbb_output.root", "RECREATE")
 FILE.cd()
 
@@ -205,7 +204,12 @@ V.Draw("same E0")
 NU.Draw("same")
 ND.Draw("same")
 leg2.Draw()
-FILE.Write()
+N.Write()
+V.Write()
+NU.Write()
+ND.Write()
+A.Write()
+#FILE.Write()
 FILE.Save()
 C3.Print("bkg_bbtag%s.pdf"%cut[0])
 
