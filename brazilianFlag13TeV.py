@@ -26,7 +26,7 @@ def Plot(files, label, obs):
     radmasses = []
     for f in files:
 #        radmasses.append(float(f.replace("CMS_jj_","").split("_")[0])/1000.)
-        radmasses = [1.,1.2,1.6,2.,3.]#,3.5,4.,4.5]
+        radmasses = [1.,1.2,1.6,1.8,2.,2.5,3.,3.5]#,4.]#,4.5]
     print radmasses
 
     efficiencies={}
@@ -253,7 +253,7 @@ if __name__ == '__main__':
 
   for chan in channels:
     print "chan =",chan
-    masses =[1000,1200,1600,2000,3000]
+    masses =[1000,1200,1600,1800, 2000,2500, 3000, 3500]#, 4000]
 
     HPplots=[]
     LPplots=[]
