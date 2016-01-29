@@ -15,7 +15,7 @@ from Plotting_Header import *
 
 
 
-mass=[1000,1200,1600,2000,3000]
+mass=[1000,1200,1600,1800,2000,2500,3000]
 VAR = "dijetmass"
 
 #variable bin from dijet analysis 788 838 
@@ -24,11 +24,12 @@ binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1
 
 
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.8&jet2bbtag>0.8))"
+sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
 lumi =2190.
 background = TFile("Hbb_output.root")
 UD = ['Up','Down']
 background.cd()
+SF_tau21=1.031
 
 print("rescaling from 3 to 2/fb ############ warning ############")
 
@@ -48,13 +49,13 @@ for m in mass:
 	Signal_mX = TH1F("Signal_mX_%s"%(m), "", len(binBoundaries)-1, array('d',binBoundaries))
 
 
-	signal_file= TFile("../BG_%s_v6p2_0.root"%(m))
+	signal_file= TFile("../Grav_%s_0.root"%(m))
 	htrig = signal_file.Get("ct")
 	generatedEvents =htrig.GetEntries()
 	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
 	writeplot(tree, Signal_mX, VAR, sigregcut, "(1.0)")
-	Signal_mX.Scale(lumi/generatedEvents)
+	Signal_mX.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	
 
         signal_integral = Signal_mX.Integral()
@@ -132,7 +133,8 @@ for m in mass:
         text_file.write("process                                         Signal_mX_%s  QCD\n"%(m))
         text_file.write("rate                                            %f  %f\n"%(signal_integral,qcd_integral))
         text_file.write("-------------------------------------------------------------------------------\n")
-	text_file.write("lumi_13TeV lnN                          1.046       1.046\n")	
+	text_file.write("lumi_13TeV lnN                          1.046       -\n")	
+        text_file.write("CMS_eff_tau21_sf lnN                    1.177       -\n") #(0.129/1.031)*sqrt(2) 
         text_file.write("CMS_scale_13TeV shapeN2                           -       1.000\n")
 	for bin in range(0,len(binBoundaries)-1):
 		text_file.write("CMS_stat_13TeV_bin%s shapeN2                           -       1.000\n"%(bin))

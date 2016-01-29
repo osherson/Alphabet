@@ -57,7 +57,7 @@ HbbTest.TwoDPlot.Draw() # Show that plot:
 
 # NOW DO THE ACTUAL ALPHABETIZATION: (Creating the regions)
 # The command is: .GetRates(cut, bins, truthbins, center, fit)
-cut = [0.8, ">"]
+cut = [0.4, ">"]
 # so we need to give it bins:
 bins = [[50,75],[75,100],[130,150],[150,200]]
 #bins = [[50,70],[70,90],[130,150],[150,200]]
@@ -105,8 +105,8 @@ C2.Print("fi_bbtag%s.pdf"%cut[0])
 
 
 
-tag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.8&jet2bbtag>0.8))"
-antitag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<0.8&jet2bbtag>0.8))"
+tag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
+antitag = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1tau21<0.6&jet2tau21<0.6)&(jet1bbtag<0.4&jet2bbtag>0.4))"
 
 
 # var we want to look at:
