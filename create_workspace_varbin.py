@@ -30,6 +30,7 @@ background = TFile("Hbb_output.root")
 UD = ['Up','Down']
 background.cd()
 SF_tau21=1.031
+gSystem.Load("DrawFunctions_C.so")
 
 print("rescaling from 3 to 2/fb ############ warning ############")
 
@@ -54,7 +55,7 @@ for m in mass:
 	generatedEvents =htrig.GetEntries()
 	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
-	writeplot(tree, Signal_mX, VAR, sigregcut, "(1.0)")
+	writeplot(tree, Signal_mX, VAR, sigregcut, "weight2( myTree.nTrueInt)")
 	Signal_mX.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	
 
@@ -133,8 +134,12 @@ for m in mass:
         text_file.write("process                                         Signal_mX_%s  QCD\n"%(m))
         text_file.write("rate                                            %f  %f\n"%(signal_integral,qcd_integral))
         text_file.write("-------------------------------------------------------------------------------\n")
-	text_file.write("lumi_13TeV lnN                          1.046       -\n")	
-        text_file.write("CMS_eff_tau21_sf lnN                    1.177       -\n") #(0.129/1.031)*sqrt(2) 
+	text_file.write("lumi_13TeV lnN                          1.04       -\n")	
+        text_file.write("CMS_eff_tau21_sf lnN                    1.25       -\n") #(0.129/1.031)*(2) 
+        text_file.write("CMS_pileup lnN                    1.02       -\n")  
+        text_file.write("CMS_eff_mass lnN                    1.03       -\n")   
+        text_file.write("CMS_JEC lnN 		     1.10        -\n") #to be fixed	
+        text_file.write("CMS_JER lnN                    1.03        -\n")
         text_file.write("CMS_scale_13TeV shapeN2                           -       1.000\n")
 	for bin in range(0,len(binBoundaries)-1):
 		text_file.write("CMS_stat_13TeV_bin%s shapeN2                           -       1.000\n"%(bin))
