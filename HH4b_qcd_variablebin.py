@@ -36,7 +36,7 @@ iPeriod =4
 
 # FORMAT IS:
 # dist = ("name", "location of file", "name of tree", "weight (can be more complicated than just a number, see MC example below)")
-QCD = DIST("Data", "../QCD_HT_v6p4.root", "myTree", "(1.)")
+QCD = DIST("Data", "../QCD_HT_2190_twiki.root", "myTree", "(1.)")
 
 # Now we arrange them correctly:
 

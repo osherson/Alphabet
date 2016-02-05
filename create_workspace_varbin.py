@@ -24,21 +24,19 @@ binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1
 
 
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
+sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4)&triggerpass>0)"
 lumi =2190.
 background = TFile("Hbb_output.root")
 UD = ['Up','Down']
-background.cd()
 SF_tau21=1.031
 gSystem.Load("DrawFunctions_C.so")
 
-print("rescaling from 3 to 2/fb ############ warning ############")
-
-QCD.Scale(lumi/3000.)
-QCD_Antitag.Scale(lumi/3000.)
-QCD_CMS_scale_13TeVUp.Scale(lumi/3000.)
-QCD_CMS_scale_13TeVDown.Scale(lumi/3000.)
-data_obs.Scale(lumi/3000.)
+mc_norm=1./(12509.4417393/10350.0)
+QCD.Scale(mc_norm)
+QCD_Antitag.Scale(mc_norm)
+QCD_CMS_scale_13TeVUp.Scale(mc_norm)
+QCD_CMS_scale_13TeVDown.Scale(mc_norm)
+data_obs.Scale(mc_norm)
 
 
 for m in mass:
@@ -48,7 +46,7 @@ for m in mass:
 	hh.cd()
 
 	Signal_mX = TH1F("Signal_mX_%s"%(m), "", len(binBoundaries)-1, array('d',binBoundaries))
-
+	print(m)
 
 	signal_file= TFile("../Grav_%s_0.root"%(m))
 	htrig = signal_file.Get("ct")
@@ -60,7 +58,8 @@ for m in mass:
 	
 
         signal_integral = Signal_mX.Integral()
-
+	print(signal_integral) 
+        background.cd() 	
 	qcd_integral = QCD.Integral()
 
 	qcd =QCD
