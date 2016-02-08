@@ -27,39 +27,49 @@ SF_tau21=1.031
 gSystem.Load("DrawFunctions_C.so")
 
 mc_norm=1./(12509.4417393/10350.0)
-
+output_file = TFile("MassPlotFineBins.root","RECREATE")
 
 for m in mass:
 
-	output_file = TFile("hh_mX_%s_13TeV.root"%(m),"RECREATE")
 
-	Signal_mX = TH1F("Signal_mX_%s"%(m), "", 3000, 0., 3000.)
+	Graviton_cat0 = TH1F("Graviton%s_cat0"%(m), "", 3000, 0., 3000.)
+	Graviton_cat1 = TH1F("Graviton%s_cat1"%(m), "", 3000, 0., 3000.)
+	Graviton_cat2 = TH1F("Graviton%s_cat2"%(m), "", 3000, 0., 3000.)
 
 	signal_file= TFile("../Grav_%s_0.root"%(m))
 	htrig = signal_file.Get("ct")
 	generatedEvents =htrig.GetEntries()
 	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
-	writeplot(tree, Signal_mX, VAR, sigregcut, "weight2( myTree.nTrueInt)")
-	Signal_mX.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+	writeplot(tree, Graviton_cat0, VAR, sigregcut, "weight2( myTree.nTrueInt)")
+	Graviton_cat0.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+	writeplot(tree, Graviton_cat1, VAR, sigregcut, "weight2( myTree.nTrueInt)")
+        Graviton_cat1.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+	writeplot(tree, Graviton_cat2, VAR, sigregcut, "weight2( myTree.nTrueInt)")
+        Graviton_cat2.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	
 
-        signal_integral = Signal_mX.Integral()
+        signal_integral = Graviton_cat0.Integral()
 	print(signal_integral) 
 	output_file.cd()
-	Signal_mX.Write()
-	output_file.Write()
-	output_file.Close()
+	Graviton_cat0.Write()
+	Graviton_cat1.Write()
+	Graviton_cat2.Write()	
 
-output_file2 = TFile("hh_mX_background_13TeV.root","RECREATE")
-Background_mX = TH1F("Background_mX", "", 3000, 0., 3000.)
+QCD_cat0 = TH1F("QCD_cat0", "", 3000, 0., 3000.)
+QCD_cat1 = TH1F("QCD_cat1", "", 3000, 0., 3000.)
+QCD_cat2 = TH1F("QCD_cat2", "", 3000, 0., 3000.)
 background.cd()
 btree = background.Get("myTree")
-writeplot(btree, Background_mX, VAR, sigregcut, "1")#weight2( myTree.nTrueInt)")
-Background_mX.Scale(mc_norm)
-output_file2.cd()
-Background_mX.Write()
-output_file2.Write()
-output_file2.Close()
+writeplot(btree, QCD_cat0, VAR, sigregcut, "1")#weight2( myTree.nTrueInt)")
+writeplot(btree, QCD_cat1, VAR, sigregcut, "1")
+writeplot(btree, QCD_cat2, VAR, sigregcut, "1")
+QCD_cat0.Scale(mc_norm)
+output_file.cd()
+QCD_cat0.Write()
+QCD_cat1.Write()
+QCD_cat2.Write()
+output_file.Write()
+output_file.Close()
 
 
