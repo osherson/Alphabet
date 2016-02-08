@@ -42,11 +42,11 @@ for m in mass:
 	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
 	writeplot(tree, Graviton_cat0, VAR, sigregcut, "weight2( myTree.nTrueInt)")
-	Graviton_cat0.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+#	Graviton_cat0.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	writeplot(tree, Graviton_cat1, VAR, sigregcut, "weight2( myTree.nTrueInt)")
-        Graviton_cat1.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+ #       Graviton_cat1.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	writeplot(tree, Graviton_cat2, VAR, sigregcut, "weight2( myTree.nTrueInt)")
-        Graviton_cat2.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+  #      Graviton_cat2.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
 	
 
         signal_integral = Graviton_cat0.Integral()
