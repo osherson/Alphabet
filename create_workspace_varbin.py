@@ -24,19 +24,20 @@ binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1
 
 
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4)&triggerpass>0)"
+sigregcut = "triggerpass>0&dijetmass>800&jet1tau21<0.6&jet2tau21<0.6&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1bbtag>0.4&jet2bbtag>0.4)"
 lumi =2190.
 background = TFile("Hbb_output.root")
 UD = ['Up','Down']
 SF_tau21=1.031
-gSystem.Load("DrawFunctions_C.so")
+SF_bbtag=0.808
+gSystem.Load("DrawFunctions_h.so")
 
 mc_norm=1./(12509.4417393/10350.0)
-QCD.Scale(mc_norm)
-QCD_Antitag.Scale(mc_norm)
-QCD_CMS_scale_13TeVUp.Scale(mc_norm)
-QCD_CMS_scale_13TeVDown.Scale(mc_norm)
-data_obs.Scale(mc_norm)
+QCD.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_Antitag.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_CMS_scale_13TeVUp.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_CMS_scale_13TeVDown.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+data_obs.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
 
 
 for m in mass:
@@ -53,8 +54,10 @@ for m in mass:
 	generatedEvents =htrig.GetEntries()
 	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
-	writeplot(tree, Signal_mX, VAR, sigregcut, "weight2( myTree.nTrueInt)")
-	Signal_mX.Scale(lumi*SF_tau21*SF_tau21/generatedEvents)
+	writeplot(tree, Signal_mX, VAR, sigregcut, "weight2(nTrueInt)")
+	print(Signal_mX.Integral())
+	Signal_mX.Scale(lumi*0.01*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag/generatedEvents)
+	
 	
 
         signal_integral = Signal_mX.Integral()
@@ -133,13 +136,16 @@ for m in mass:
         text_file.write("process                                         Signal_mX_%s  QCD\n"%(m))
         text_file.write("rate                                            %f  %f\n"%(signal_integral,qcd_integral))
         text_file.write("-------------------------------------------------------------------------------\n")
-	text_file.write("lumi_13TeV lnN                          1.04       -\n")	
+	text_file.write("lumi_13TeV lnN                          1.046       -\n")	
         text_file.write("CMS_eff_tau21_sf lnN                    1.25       -\n") #(0.129/1.031)*(2) 
         text_file.write("CMS_pileup lnN                    1.02       -\n")  
-        text_file.write("CMS_eff_mass lnN                    1.03       -\n")   
-        text_file.write("CMS_JEC lnN 		     1.10        -\n") #to be fixed	
-        text_file.write("CMS_JER lnN                    1.03        -\n")
+        text_file.write("CMS_eff_Htag_sf lnN                    1.1       -\n")   
+        text_file.write("CMS_JEC lnN 		     1.02        -\n") #to be fixed	
+	text_file.write("CMS_bbtag_sf lnN                 1.23        -\n") #to be fixed  
+        text_file.write("CMS_JER lnN                    1.02        -\n")
         text_file.write("CMS_scale_13TeV shapeN2                           -       1.000\n")
+	text_file.write("CMS_PDF_Scales lnN   1.02 -       \n")
+
 	for bin in range(0,len(binBoundaries)-1):
 		text_file.write("CMS_stat_13TeV_bin%s shapeN2                           -       1.000\n"%(bin))
 
