@@ -55,7 +55,7 @@ def AlphabetSlicer(plot, bins, cut, which, center): # Takes a 2D plot and measur
                 y.append(passed/(failed))      # NOTE: negative bins are not corrected, if you're getting negative values your bins are too fine.
                 ep = math.sqrt(passed)
                 ef = math.sqrt(failed)
-                err = (passed/(failed))*math.sqrt((ep/passed)+(ef/(passed))**2)
+                err = (passed/(failed))*((ep/passed)+(ef/(failed)))
                 eyh.append(err)
                 if (passed/failed) - err > 0.:
                         eyl.append(err)
