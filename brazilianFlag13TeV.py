@@ -1,5 +1,21 @@
 import ROOT as rt
 from ROOT import *
+import CMS_lumi, tdrstyle
+
+#set the tdr style
+#tdrstyle.setTDRStyle()
+
+#change the CMS_lumi variables (see CMS_lumi.py)
+CMS_lumi.lumi_13TeV = "2.2 fb^{-1}"
+CMS_lumi.writeExtraText = 1
+CMS_lumi.extraText = "Preliminary"
+CMS_lumi.lumi_sqrtS = "13 TeV" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+
+iPos = 11
+if( iPos==0 ): CMS_lumi.relPosX = 0.12
+
+iPeriod =4
+
 
 withAcceptance=False
 unblind=False
@@ -26,7 +42,7 @@ def Plot(files, label, obs):
     radmasses = []
     for f in files:
 #        radmasses.append(float(f.replace("CMS_jj_","").split("_")[0])/1000.)
-        radmasses = [1.,1.2,1.6,2.,3.]#,3.5,4.,4.5]
+        radmasses = [1.,1.2,1.6,1.8,2.,2.5,3.]#,3.5,4.,4.5]
     print radmasses
 
     efficiencies={}
@@ -130,7 +146,7 @@ def Plot(files, label, obs):
     mg.GetXaxis().SetTitleSize(0.035)
     mg.GetXaxis().SetLabelSize(0.045)
     mg.GetYaxis().SetLabelSize(0.045)
-    mg.GetYaxis().SetRangeUser(0.1,10000)
+    mg.GetYaxis().SetRangeUser(1.,1000)
     mg.GetYaxis().SetTitleOffset(1.4)
     mg.GetYaxis().CenterTitle(True)
     mg.GetXaxis().SetTitleOffset(1.1)
@@ -138,9 +154,9 @@ def Plot(files, label, obs):
     mg.GetXaxis().SetNdivisions(508)
 
     if "qW" in label.split("_")[0] or "qZ" in label.split("_")[0]:
-        mg.GetXaxis().SetLimits(0.9,4.1)
+        mg.GetXaxis().SetLimits(0.9,3.5)
     else:
-        mg.GetXaxis().SetLimits(0.9,4.1)
+        mg.GetXaxis().SetLimits(0.9,3.5)
 
     # histo to shade
     n=len(fChain)
@@ -168,20 +184,21 @@ def Plot(files, label, obs):
     gtheory = rt.TGraphErrors(1)
     gtheory.SetLineColor(rt.kBlue)
     gtheory.SetLineWidth(4)
-    #ftheory=open("signalcrosssections13TeV.txt")
-    #j=0
-    #glogtheory = rt.TGraphErrors(1)
-    #for lines in ftheory.readlines():
-    # for line in lines.split("\r"):
-    #  if label.split("_")[0] in line:
-    #    split=line.split(":")
-    #    gtheory.SetPoint(j, float(split[0][-4:])/1000., float(split[1])*1000.)
-    #    glogtheory.SetPoint(j, float(split[0][-4:])/1000., log(float(split[1])*1000.))
-#	j+=1
-#    mg.Add(gtheory,"L")
-#    gtheory.Draw("L")
-#    if "RS1WW" in label.split("_")[0]:
-#        ltheory="G_{RS1} #rightarrow WW (k/#bar{M}_{Pl}=0.1)"
+    #ftheory=open("signal_cross_section_RS1Graviton.txt")
+    ftheory=open("bulk_graviton_exo15002.txt")	
+    ij=0
+    glogtheory = rt.TGraphErrors(1)
+    for lines in ftheory.readlines():
+     for line in lines.split("\r"):
+        split=line.split(":")
+	print(split[1][0:])
+        gtheory.SetPoint(ij, float(split[0][-4:])/1000., float(split[1])*0.57*0.57*1000.)
+        glogtheory.SetPoint(ij, float(split[0][-4:])/1000., log(float(split[1])*0.57*0.57*1000.))
+	ij+=1
+    mg.Add(gtheory,"L")
+    gtheory.Draw("L")
+    #ltheory="G_{RS1} #rightarrow HH (k/#bar{M}_{Pl}=0.1)"
+    ltheory ="BulkGrav k=0.5"	
     
    # crossing=0
    # for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
@@ -201,11 +218,11 @@ def Plot(files, label, obs):
 	    #crossing=1
     
     if "WW" in label.split("_")[0] or "ZZ" in label.split("_")[0]:
-       leg = rt.TLegend(0.63,0.75,0.95,0.89)
-       leg2 = rt.TLegend(0.43,0.65,0.95,0.89)
+       leg = rt.TLegend(0.53,0.65,0.95,0.89)
+       leg2 = rt.TLegend(0.33,0.55,0.95,0.89)
     else:
-       leg = rt.TLegend(0.69,0.75,0.95,0.89)
-       leg2 = rt.TLegend(0.59,0.65,0.95,0.89)
+       leg = rt.TLegend(0.59,0.65,0.95,0.89)
+       leg2 = rt.TLegend(0.49,0.55,0.95,0.89)
     leg.SetFillColor(rt.kWhite)
     leg.SetFillStyle(0)
     leg.SetTextSize(0.04)
@@ -219,7 +236,7 @@ def Plot(files, label, obs):
     if obs: leg.AddEntry(grobs, "Observed", "L")
     leg.AddEntry(gryellow, "Expected (68%)", "f")
     leg.AddEntry(grgreen, "Expected (95%)", "f")
-#    leg.AddEntry(gtheory, ltheory, "L")
+    leg.AddEntry(gtheory, ltheory, "L")
 
     if obs: leg2.AddEntry(grobs, " ", "")
     #leg2.AddEntry(grmean, " ", "L")
@@ -229,11 +246,10 @@ def Plot(files, label, obs):
     leg.Draw()
     #leg2.Draw("same")
 
-    banner = TLatex(0.22,0.93,"CMS Preliminary        2.1 fb^{-1} (13 TeV)");
-    banner.SetTextFont(42)	
-    banner.SetNDC()
-    banner.SetTextSize(0.035)
-    banner.Draw();  
+    CMS_lumi.CMS_lumi(c1, iPeriod, iPos)
+    c1.cd()
+    c1.Update()
+
 
     if withAcceptance:
         c1.SaveAs("brazilianFlag_acc_%s_13TeV.root" %label)
@@ -250,7 +266,7 @@ if __name__ == '__main__':
 
   for chan in channels:
     print "chan =",chan
-    masses =[1000,1200,1600,2000,3000]
+    masses =[1000,1200,1600,1800,2000,2500,3000]
 
     HPplots=[]
     LPplots=[]

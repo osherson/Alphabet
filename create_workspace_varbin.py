@@ -13,24 +13,31 @@ import Plotting_Header
 from Plotting_Header import *
 
 
-mass=[1000,1200,1600,2000,3000]
+
+
+mass=[1000,1200,1600,1800,2000,2500,3000]
 VAR = "dijetmass"
-bins = [24,800,3000]
+
+#variable bin from dijet analysis 788 838 
+binBoundaries = [800, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
+        1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019 ]#, 3147, 3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509,
+
+
 vartitle = "m_{X} (GeV)"
-sigregcut = "(dijetmass>800&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>90)&jet1tau21<0.6&jet2tau21<0.6&(jet1bbtag>0.4&jet2bbtag>0.4))"
+sigregcut = "triggerpass>0&dijetmass>800&jet1tau21<0.6&jet2tau21<0.6&(jet2pmass<130&jet2pmass>90)&(jet1pmass<130&jet1pmass>100)&(jet1bbtag>0.4&jet2bbtag>0.4)"
 lumi =2190.
-generatedEvents =50000.
 background = TFile("Hbb_output.root")
 UD = ['Up','Down']
-background.cd()
+SF_tau21=1.031
+SF_bbtag=0.808
+gSystem.Load("DrawFunctions_h.so")
 
-print("rescaling from 3 to 2/fb ############ warning ############")
-
-QCD.Scale(lumi/3000.)
-QCD_Antitag.Scale(lumi/3000.)
-QCD_CMS_scale_13TeVUp.Scale(lumi/3000.)
-QCD_CMS_scale_13TeVDown.Scale(lumi/3000.)
-data_obs.Scale(lumi/3000.)
+mc_norm=1./(12509.4417393/10350.0)
+QCD.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_Antitag.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_CMS_scale_13TeVUp.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+QCD_CMS_scale_13TeVDown.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
+data_obs.Scale(mc_norm*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag)
 
 
 for m in mass:
@@ -39,17 +46,23 @@ for m in mass:
 	hh=output_file.mkdir("hh")
 	hh.cd()
 
-	Signal_mX = TH1F("Signal_mX_%s"%(m), "", bins[0], bins[1], bins[2])
+	Signal_mX = TH1F("Signal_mX_%s"%(m), "", len(binBoundaries)-1, array('d',binBoundaries))
+	print(m)
 
-
-	signal_file= TFile("../BG_%s_v6p2_0.root"%(m))
+	signal_file= TFile("../Grav_%s_0.root"%(m))
+	htrig = signal_file.Get("ct")
+	generatedEvents =htrig.GetEntries()
+	print(generatedEvents)
 	tree = signal_file.Get("myTree") 
-	writeplot(tree, Signal_mX, VAR, sigregcut, "(1.0)")
-	Signal_mX.Scale(lumi/generatedEvents)
+	writeplot(tree, Signal_mX, VAR, sigregcut, "weight2(nTrueInt)")
+	print(Signal_mX.Integral())
+	Signal_mX.Scale(lumi*0.01*SF_tau21*SF_tau21*SF_bbtag*SF_bbtag/generatedEvents)
+	
 	
 
         signal_integral = Signal_mX.Integral()
-
+	print(signal_integral) 
+        background.cd() 	
 	qcd_integral = QCD.Integral()
 
 	qcd =QCD
@@ -59,31 +72,36 @@ for m in mass:
 	data = data_obs
 	output_file.cd()
         hh.cd()
-	qcd_stat_up =TH1F("qcd_stat_up","",bins[0], bins[1], bins[2])
-        qcd_stat_down =TH1F("qcd_stat_down","",bins[0], bins[1], bins[2])
+	qcd_stat_up =TH1F("qcd_stat_up","",len(binBoundaries)-1, array('d',binBoundaries))
+        qcd_stat_down =TH1F("qcd_stat_down","",len(binBoundaries)-1, array('d',binBoundaries))
 	
-	for bin in range(0,bins[0]):
+	for bin in range(0,len(binBoundaries)-1):
             for Q in UD:
-                qcd_syst =TH1F("%s_bin%s%s"%("QCD_CMS_stat_13TeV",bin,Q),"",bins[0], bins[1], bins[2]) 
+                qcd_syst =TH1F("%s_bin%s%s"%("QCD_CMS_stat_13TeV",bin,Q),"",len(binBoundaries)-1, array('d',binBoundaries))
+		bin_stat = qcd.GetBinContent(bin+1)
+		bin_at = qcd_antitag.GetBinContent(bin+1)
+		if bin_at < 1 and bin_at >0:  
+			bin_at=1.
+		
                 if Q == 'Up':
-			if qcd.GetBinContent(bin+1) >0 :
-			       qcd_stat_up.SetBinContent(bin+1,qcd.GetBinContent(bin+1)+qcd_antitag.GetBinError(bin+1)/qcd.GetBinContent(bin+1))	
-                               qcd_syst.SetBinContent(bin+1,qcd.GetBinContent(bin+1)+qcd_antitag.GetBinError(bin+1)/qcd.GetBinContent(bin+1))
+			if bin_at >0 :
+			       qcd_stat_up.SetBinContent(bin+1,bin_stat+qcd_antitag.GetBinError(bin+1)/bin_at*bin_stat)	
+                               qcd_syst.SetBinContent(bin+1,bin_stat+qcd_antitag.GetBinError(bin+1)/bin_at*bin_stat)
 			else : 
-				qcd_syst.SetBinContent(bin+1,qcd.GetBinContent(bin+1))
-				qcd_stat_up.SetBinContent(bin+1,qcd.GetBinContent(bin+1))
+				qcd_syst.SetBinContent(bin+1,bin_stat)
+				qcd_stat_up.SetBinContent(bin+1,bin_stat)
 				
                 if Q == 'Down':
-			if qcd.GetBinContent(bin+1) >0 :
-				if ( qcd.GetBinContent(bin+1)-qcd_antitag.GetBinError(bin+1)/qcd.GetBinContent(bin+1) >0 ):
-                        		qcd_syst.SetBinContent(bin+1,qcd.GetBinContent(bin+1)-qcd_antitag.GetBinError(bin+1)/qcd.GetBinContent(bin+1))
-					qcd_stat_down.SetBinContent(bin+1,qcd.GetBinContent(bin+1)-qcd_antitag.GetBinError(bin+1)/qcd.GetBinContent(bin+1))
+			if bin_at >0 :
+				if ( bin_stat-qcd_antitag.GetBinError(bin+1)/bin_at*bin_stat >0 ):
+                        		qcd_syst.SetBinContent(bin+1,bin_stat-qcd_antitag.GetBinError(bin+1)/bin_at*bin_stat)
+					qcd_stat_down.SetBinContent(bin+1,bin_stat-qcd_antitag.GetBinError(bin+1)/bin_at*bin_stat)
 				else :
 					qcd_syst.SetBinContent(bin+1, 0.001)
 					qcd_stat_down.SetBinContent(bin+1, 0.001)
 			else : 	
-				qcd_syst.SetBinContent(bin+1,qcd.GetBinContent(bin+1))
-				qcd_stat_down.SetBinContent(bin+1,qcd.GetBinContent(bin+1))
+				qcd_syst.SetBinContent(bin+1,bin_stat)
+				qcd_stat_down.SetBinContent(bin+1,bin_stat)
 		qcd_syst.Write()
 		
 
@@ -118,9 +136,17 @@ for m in mass:
         text_file.write("process                                         Signal_mX_%s  QCD\n"%(m))
         text_file.write("rate                                            %f  %f\n"%(signal_integral,qcd_integral))
         text_file.write("-------------------------------------------------------------------------------\n")
-	text_file.write("lumi_13TeV lnN                          1.046       1.046\n")	
+	text_file.write("lumi_13TeV lnN                          1.046       -\n")	
+        text_file.write("CMS_eff_tau21_sf lnN                    1.25       -\n") #(0.129/1.031)*(2) 
+        text_file.write("CMS_pileup lnN                    1.02       -\n")  
+        text_file.write("CMS_eff_Htag_sf lnN                    1.1       -\n")   
+        text_file.write("CMS_JEC lnN 		     1.02        -\n") #to be fixed	
+	text_file.write("CMS_bbtag_sf lnN                 1.23        -\n") #to be fixed  
+        text_file.write("CMS_JER lnN                    1.02        -\n")
         text_file.write("CMS_scale_13TeV shapeN2                           -       1.000\n")
-	for bin in range(0,bins[0]):
+	text_file.write("CMS_PDF_Scales lnN   1.02 -       \n")
+
+	for bin in range(0,len(binBoundaries)-1):
 		text_file.write("CMS_stat_13TeV_bin%s shapeN2                           -       1.000\n"%(bin))
 
 
@@ -146,7 +172,7 @@ for m in mass:
 	data.SetFillColor(0)
 	data.SetMarkerColor(1)
 	data.SetMarkerStyle(20)
-	qcd.GetYaxis().SetTitle("events / "+str((bins[2]-bins[1])/bins[0])+" GeV")
+	#qcd.GetYaxis().SetTitle("events / "+str((bins[2]-bins[1])/bins[0])+" GeV")
 	qcd.GetXaxis().SetTitle(vartitle)
 
 	leg2 = TLegend(0.6,0.6,0.89,0.89)

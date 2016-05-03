@@ -1,0 +1,50 @@
+max    1     number of categories
+jmax   1     number of samples minus one
+kmax    *     number of nuisance parameters
+-------------------------------------------------------------------------------
+shapes * * hh_mX_1800_13TeV.root hh/$PROCESS hh/$PROCESS_$SYSTEMATIC
+-------------------------------------------------------------------------------
+bin                                            hh4b
+observation                                    -1
+-------------------------------------------------------------------------------
+bin                                             hh4b            hh4b
+process                                          0      1
+process                                         Signal_mX_1800  QCD
+rate                                            2.528484  47.653245
+-------------------------------------------------------------------------------
+lumi_13TeV lnN                          1.046       -
+CMS_eff_tau21_sf lnN                    1.25       -
+CMS_pileup lnN                    1.02       -
+CMS_eff_Htag_sf lnN                    1.1       -
+CMS_JEC lnN 		     1.02        -
+CMS_bbtag_sf lnN                 1.23        -
+CMS_JER lnN                    1.02        -
+CMS_scale_13TeV shapeN2                           -       1.000
+CMS_PDF_Scales lnN   1.02 -       
+CMS_stat_13TeV_bin0 shapeN2                           -       1.000
+CMS_stat_13TeV_bin1 shapeN2                           -       1.000
+CMS_stat_13TeV_bin2 shapeN2                           -       1.000
+CMS_stat_13TeV_bin3 shapeN2                           -       1.000
+CMS_stat_13TeV_bin4 shapeN2                           -       1.000
+CMS_stat_13TeV_bin5 shapeN2                           -       1.000
+CMS_stat_13TeV_bin6 shapeN2                           -       1.000
+CMS_stat_13TeV_bin7 shapeN2                           -       1.000
+CMS_stat_13TeV_bin8 shapeN2                           -       1.000
+CMS_stat_13TeV_bin9 shapeN2                           -       1.000
+CMS_stat_13TeV_bin10 shapeN2                           -       1.000
+CMS_stat_13TeV_bin11 shapeN2                           -       1.000
+CMS_stat_13TeV_bin12 shapeN2                           -       1.000
+CMS_stat_13TeV_bin13 shapeN2                           -       1.000
+CMS_stat_13TeV_bin14 shapeN2                           -       1.000
+CMS_stat_13TeV_bin15 shapeN2                           -       1.000
+CMS_stat_13TeV_bin16 shapeN2                           -       1.000
+CMS_stat_13TeV_bin17 shapeN2                           -       1.000
+CMS_stat_13TeV_bin18 shapeN2                           -       1.000
+CMS_stat_13TeV_bin19 shapeN2                           -       1.000
+CMS_stat_13TeV_bin20 shapeN2                           -       1.000
+CMS_stat_13TeV_bin21 shapeN2                           -       1.000
+CMS_stat_13TeV_bin22 shapeN2                           -       1.000
+CMS_stat_13TeV_bin23 shapeN2                           -       1.000
+CMS_stat_13TeV_bin24 shapeN2                           -       1.000
+CMS_stat_13TeV_bin25 shapeN2                           -       1.000
+CMS_stat_13TeV_bin26 shapeN2                           -       1.000
